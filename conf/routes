@@ -1,0 +1,5 @@
+
+POST    /api/shorten                controllers.ShortenerController.createShortURL
+GET     /go/:short_url              controllers.ShortenerController.redirect(short_url: String)
+
+      
