@@ -4,7 +4,6 @@ import javax.inject.Inject
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
-import play.api.libs.json.JsValue
 import play.api.mvc._
 import resources._
 
@@ -13,35 +12,25 @@ class ShortenerController @Inject()(cc: ControllerComponents, resourceHandler: U
 
   def createShortURL: Action[AnyContent] = Action { implicit request =>
     val body: AnyContent = request.body
-    val jsonBody: Option[JsValue] = body.asJson
 
-    if (jsonBody.isDefined) {
-      val eitherErrorOrData = decode[UrlResource](jsonBody.get.toString())
-      if (eitherErrorOrData.isRight) {
-        val resource: UrlResource = eitherErrorOrData.right.get
-        val shortUrl = resourceHandler.createShortURL(resource)
-        if (shortUrl.isDefined) {
-          Created(shortUrl.asJson.noSpaces).as("application/json")
-        }
-        else {
-          Conflict("There was a problem encoding the URL")
+    body.asJson match {
+      case None => BadRequest("Expecting application/json request body")
+      case Some(jsonBody) => decode[UrlResource](jsonBody.toString()) match {
+        case Left(error)=> BadRequest("Invalid application/json request body. Reason: " + error.toString)
+        case Right(resource) => resourceHandler.createShortURL(resource) match {
+          case None => Conflict("There was a problem encoding the URL")
+          case Some(shortUrl) => Created(shortUrl.asJson.noSpaces).as("application/json")
         }
       }
-      else
-        BadRequest("Invalid application/json request body. Reason: "+eitherErrorOrData.left.get.toString)
     }
-    else
-      BadRequest("Expecting application/json request body")
   }
 
   def redirect(short_url: String) = Action {
-    val originalUrl = resourceHandler.lookup(short_url)
-
-    if (originalUrl.isEmpty)
-      NotFound
-    else
-      MovedPermanently(originalUrl.get)
+    resourceHandler.lookup(short_url) match {
+      case None => NotFound
+      case Some(originalUrl) => MovedPermanently(originalUrl)
         .withHeaders(CACHE_CONTROL -> "no-cache, no-store, max-age=0, must-revalidate")
+    }
   }
 
 }
