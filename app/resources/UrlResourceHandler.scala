@@ -8,16 +8,18 @@ class UrlResourceHandler @Inject()(repository: UrlRepository) {
 
   def createShortURL(resource: UrlResource): Option[UrlResource] = {
     repository.getNextId match {
+      case None => None
       case Some(id) => {
         val encodedId = Utils.idEnconder.encode(id)
         val urlResource = UrlResource(resource.originalUrl,
                                       Option(Config.SHORT_URL_DOMAIN + encodedId),
                                       Option(Utils.getCurrentUTCTimeString))
         if (repository.setURL(id, urlResource))
-          return Option(urlResource)
+          Option(urlResource)
+        else
+          None
       }
     }
-    None
   }
 
   def lookup(shortURL: String): Option[String] = {

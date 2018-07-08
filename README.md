@@ -68,6 +68,10 @@ Data is stored this way:
 * Each generated short URL has a key like `url:`+`unique id` and it stores a json value like: `{"originalUrl":"https://www.nasa.gov","shortUrl":"http://localhost:9000/go/K4","creationDate":"2018-07-06T16:12:14.878+0000"}`
 * Counter for each access to a short URL with key `url-counter:`+`unique id`
 
+__Other__
+
+Usually, the second time you access an URL on your browser some content is taken directly from the cache. Similarly, if the server says on the first access that a site is MOVED PERMANENTLY to another address (short to long URL conversion), the new address is cached. But, what happens if we want to count every access to the short URL? In this case we have to add some values to the "Cache-Control" header of the redirection response. These are: `no-cache, no-store, max-age=0, must-revalidate`
+
 ## TODO
 
 __Additional features__
@@ -79,5 +83,4 @@ __Additional features__
 
 __Technical improvements__
 * Use Futures for extended asynchronous operation
-* Adding logging
 * Adding testing with Gatling 

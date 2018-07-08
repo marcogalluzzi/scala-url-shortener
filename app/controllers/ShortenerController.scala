@@ -4,16 +4,19 @@ import javax.inject.Inject
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
+import play.api.Logger
 import play.api.mvc._
 import resources._
 
 class ShortenerController @Inject()(cc: ControllerComponents, resourceHandler: UrlResourceHandler)
   extends AbstractController(cc) {
 
-  def createShortURL: Action[AnyContent] = Action { implicit request =>
-    val body: AnyContent = request.body
+  private val logger = Logger(getClass)
 
-    body.asJson match {
+  def createShortURL: Action[AnyContent] = Action { implicit request =>
+    logger.debug(s"$request ${request.body}")
+
+    request.body.asJson match {
       case None => BadRequest("Expecting application/json request body")
       case Some(jsonBody) => decode[UrlResource](jsonBody.toString()) match {
         case Left(error)=> BadRequest("Invalid application/json request body. Reason: " + error.toString)
@@ -25,7 +28,9 @@ class ShortenerController @Inject()(cc: ControllerComponents, resourceHandler: U
     }
   }
 
-  def redirect(short_url: String) = Action {
+  def redirect(short_url: String) = Action { implicit request =>
+    logger.debug(s"$request")
+
     resourceHandler.lookup(short_url) match {
       case None => NotFound
       case Some(originalUrl) => MovedPermanently(originalUrl)

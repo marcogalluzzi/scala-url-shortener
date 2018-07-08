@@ -26,6 +26,8 @@
 
   <logger name="play" level="INFO" />
   <logger name="application" level="DEBUG" />
+  <logger name="controllers.ShortenerController" level="DEBUG" />
+  <logger name="repository.RedisUrlRepository" level="DEBUG" />
 
   <root level="WARN">
     <appender-ref ref="ASYNCFILE" />
