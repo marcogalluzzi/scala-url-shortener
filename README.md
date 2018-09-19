@@ -19,7 +19,7 @@ Running the application is as easy as executing the command `sbt run`.
 
 Deploying is very easy also. With Play Framework a Java application is generated using the `dist`  command. This application includes a stand-alone HTTP server so only a Java installation is needed on the production server.
 
-## API REST example
+## POST example
 
 __Request__:
 * Method: POST 
