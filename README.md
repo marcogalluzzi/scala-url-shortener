@@ -3,9 +3,9 @@
 
 This is a simple __URL Shortener__ written in Scala and using the Play Framework. It's similar to public services like [TinyURL](https://tinyurl.com/) or [Google URL Shortener](https://goo.gl/).
 
-It implements an _API REST_ to get a short URL and a _redirecting service_ to go to the original URLs when accessing the short URLs.
+It implements a _POST endpoint_ to get a short URL and a _redirecting service_ to go to the original URLs when accessing the short URLs.
 
-The API REST can be called with a POST call to path `/api/shorten` with default domain `http://localhost:9000`.
+The endpoint can be called with a POST call to path `/api/shorten` with default domain `http://localhost:9000`.
 
 The short URL will be a short base 62 code added to the URL  `http://localhost:9000/go/`. This URL can be configured in the `application.conf` file to be a different domain like `https://mycompa.ny/`.
 
